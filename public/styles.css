@@ -1,0 +1,28 @@
+
+body.ng-scope{
+ background-color: lightblue;
+ text-align: center;
+}
+h1{
+ font-size: 90px;
+ text-align: center;
+}
+
+button{
+ background-color: lightgray;
+ color: black;
+ font-family: impact;
+ border-radius: 10px;
+ border: 1px solid lightgray;
+ font-size: 30px;
+}
+
+#look{
+ height:40px;
+ width: 400px;
+}
+
+#userid{
+ display: inline-block;
+ font-size: 50px;
+}

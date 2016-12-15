@@ -25,6 +25,15 @@ app.get('/profile/:userID', function(req, res) {
   ]);
 });
 
+app.get('/world/timeline', function(req, res) {
+  Tweet.find()
+  .then(function(tweets) {
+    res.json(
+      tweets
+    );
+  });
+});
+
 app.get('/userLogin/:userId/:password', function(req, res) {
   var theUserID = req.params.userId;
   var password = req.params.password;

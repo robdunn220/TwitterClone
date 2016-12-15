@@ -15,12 +15,19 @@ app.factory("TwitterApi", function factoryFunction($http, $rootScope, $cookies, 
     console.log('Logout');
     $cookies.remove('token');
     $cookies.remove('userId');
-    $state.go('home');
+    $rootScope.loginState = false;
+    $state.go('home', {}, { reload: true });
   };
 
   service.getProfile = function(userID) {
     return $http ({
       url: '/profile/' + userID
+    });
+  };
+
+  service.getWorldTimeline = function() {
+    return $http ({
+      url: '/world/timeline'
     });
   };
 
@@ -59,23 +66,31 @@ app.factory("TwitterApi", function factoryFunction($http, $rootScope, $cookies, 
   return service;
 });
 
-
-
-app.controller('HomeController', function($scope, $cookies, TwitterApi) {
-  $scope.userId = $cookies.get('userId');
-  TwitterApi.getUserInfo($scope.userId).success(function(result) {
-    $scope.tweets = result;
-  })
-  .error(function(err) {
-    console.log('Error: ', err.message);
-  });
-
-  $scope.tweet = function(text) {
-    TwitterApi.createTweet($scope.userId, text).success(function(res) {
-      console.log('Tweeted successfully');
+app.controller('HomeController', function($scope, $cookies, $state, $rootScope, TwitterApi) {
+  if ($rootScope.loginState === true) {
+    $scope.userId = $cookies.get('userId');
+    TwitterApi.getUserInfo($scope.userId).success(function(result) {
+      $scope.tweets = result;
+    })
+    .error(function(err) {
+      console.log('Error: ', err.message);
     });
-    $state.go('home');
-  };
+
+    $scope.tweet = function(text) {
+      TwitterApi.createTweet($scope.userId, text).success(function(res) {
+        console.log('Tweeted successfully');
+      });
+      $state.go('home', {}, { reload: true });
+    };
+  }
+
+  else if ($rootScope.loginState === false){
+    TwitterApi.getWorldTimeline().success(function(result) {
+      $scope.tweets = result;
+      console.log($scope.tweets);
+    });
+  }
+
 });
 
 app.controller('ProfileController', function($scope, $stateParams, TwitterApi) {
@@ -101,7 +116,7 @@ app.controller('LoginController', function($scope, $stateParams, $state, $cookie
           $rootScope.loginState = true;
           $cookies.put('token', result.token);
           $cookies.put('userId', userId);
-          $state.go('home');
+          $state.go('home', {}, { reload: true });
         }
       }
 
@@ -117,10 +132,10 @@ app.controller('SignupController', function($scope, $stateParams, $state, Twitte
     TwitterApi.userSignup(userId, password, website, avatar_url).success(function(result) {
       console.log(result);
     });
+    $state.go('login', {}, { reload: true });
   };
 
 });
-
 
 app.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider

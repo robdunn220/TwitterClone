@@ -3,7 +3,7 @@
   <input type="text" ng-model="text">
   <button type="Submit">Tweet it, dog</button>
 </form>
-<ul ng-repeat="tweet in tweets">
-  <p>{{tweet.userID}}</p>
-  <p>{{tweet.text}}</p>
-</ul>
+<div id="tweets" ng-repeat="tweet in tweets">
+  <h3>{{tweet.userID}}</h3>
+  <p>{{tweet.text}} {{tweet.timestamp}}</p>
+</div>
