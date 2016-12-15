@@ -13,15 +13,37 @@ app.use(express.static("public"));
 app.get('/profile/:userID', function(req, res) {
   var theUserID = req.params.userID;
   bluebird.all([
+    User.findById(theUserID),
+    Tweet.find({ userID: theUserID })
+    .then(function(tweets) {
+      res.json(
+        tweets
+      );
+    })
+  ]);
+});
+
+app.get('/userLogin/:userId/:password', function(req, res) {
+  var theUserID = req.params.userId;
+  var password = req.params.password;
+  bluebird.all([
     User.findById(theUserID)
     .then(function(userId) {
       if (userId !== null) {
-        Tweet.find({ userID: userId })
-        .then(function(tweets) {
-          res.json(
-            tweets
+        if (userId.password === password) {
+          Tweet.find({ userID: userId })
+          .then(function(tweets) {
+            res.json(
+              tweets
+            );
+          });
+        }
+        else {
+          var nope = 'nope';
+          res.json (
+            nope
           );
-        });
+        }
       }
       else if (userId === null){
         res.json(

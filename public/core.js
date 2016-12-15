@@ -15,6 +15,12 @@ app.factory("TwitterApi", function factoryFunction($http) {
     });
   };
 
+  service.getUserLogin = function(userId, password) {
+    return $http ({
+      url: '/userLogin/' + userId + '/' + password
+    });
+  };
+
   service.userSignup = function(userId, password, website, avatar_url){
     return $http({
       url: '/signup',
@@ -56,12 +62,18 @@ app.controller('ProfileController', function($scope, $stateParams, TwitterApi) {
 });
 
 app.controller('LoginController', function($scope, $stateParams, $state, TwitterApi) {
-  $scope.userLogin = function(userId){
-    TwitterApi.getProfile(userId).success(function(result) {
-      console.log(result);
+  $scope.userLogin = function(userId, password){
+
+    TwitterApi.getUserLogin(userId, password).success(function(result) {
       if (result !== null) {
-        $state.go('profile', {userID: userId});
+        if (result === 'nope'){
+          console.log('Nope');
+        }
+        else {
+          $state.go('profile', {userID: userId});
+        }
       }
+
       else {
         $state.go('signup');
       }
