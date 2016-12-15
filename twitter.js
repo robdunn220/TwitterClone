@@ -6,6 +6,8 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var bodyParser = require('body-parser');
+const token = "define it later";
+const uuid = require("node-uuid");
 
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -31,11 +33,8 @@ app.get('/userLogin/:userId/:password', function(req, res) {
     .then(function(userId) {
       if (userId !== null) {
         if (userId.password === password) {
-          Tweet.find({ userID: userId })
-          .then(function(tweets) {
-            res.json(
-              tweets
-            );
+          res.json({
+            token: userId.token
           });
         }
         else {
@@ -60,7 +59,8 @@ app.post('/signup', function(req, res) {
     _id: req.body._id,
     password: req.body.password,
     website: req.body.website,
-    avatar_url: req.body.avatar_url
+    avatar_url: req.body.avatar_url,
+    token: uuid.v4()
   });
 });
 
@@ -83,13 +83,23 @@ app.get('/user_info/:userID', function(req, res) {
     });
 });
 
-
+app.post('/tweet/:userID/:text', function(req, res) {
+  Tweet.create({
+    text: req.params.text,
+    timestamp: new Date(),
+    userID: req.params.userID
+  })
+  .then(function(res) {
+    console.log(res);
+  });
+});
 
 const User = mongoose.model("User", {
   _id: String, // actually the username
   password: String,
   website: String,
-  avatar_url: String
+  avatar_url: String,
+  token:String
 });
 
 const Tweet = mongoose.model("Tweet", {
