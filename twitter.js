@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost/twitter");
 var bluebird = require("bluebird");
-mongoose.promise = bluebird;
+mongoose.Promise = bluebird;
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -13,14 +13,33 @@ app.use(express.static("public"));
 app.get('/profile/:userID', function(req, res) {
   var theUserID = req.params.userID;
   bluebird.all([
-    User.findById(theUserID),
-    Tweet.find({ userID: theUserID })
-    .then(function(tweets) {
-      res.json(
-        tweets
-      );
+    User.findById(theUserID)
+    .then(function(userId) {
+      if (userId !== null) {
+        Tweet.find({ userID: userId })
+        .then(function(tweets) {
+          res.json(
+            tweets
+          );
+        });
+      }
+      else if (userId === null){
+        res.json(
+          userId
+        );
+      }
     })
   ]);
+});
+
+app.post('/signup', function(req, res) {
+  console.log(req.body);
+  User.create({
+    _id: req.body._id,
+    password: req.body.password,
+    website: req.body.website,
+    avatar_url: req.body.avatar_url
+  });
 });
 
 app.get('/user_info/:userID', function(req, res) {
@@ -42,8 +61,11 @@ app.get('/user_info/:userID', function(req, res) {
     });
 });
 
+
+
 const User = mongoose.model("User", {
   _id: String, // actually the username
+  password: String,
   website: String,
   avatar_url: String
 });

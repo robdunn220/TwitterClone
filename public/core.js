@@ -15,6 +15,20 @@ app.factory("TwitterApi", function factoryFunction($http) {
     });
   };
 
+  service.userSignup = function(userId, password, website, avatar_url){
+    return $http({
+      url: '/signup',
+      method: 'POST',
+      data: {
+        _id : userId,
+        password: password,
+        website: website,
+        avatar_url: avatar_url
+      }
+    });
+  };
+
+
   return service;
 });
 
@@ -28,6 +42,8 @@ app.controller('HomeController', function($scope, $stateParams, TwitterApi) {
   });
 });
 
+
+
 app.controller('ProfileController', function($scope, $stateParams, TwitterApi) {
   console.log($stateParams.userID);
   TwitterApi.getProfile($stateParams.userID).success(function(result) {
@@ -35,9 +51,38 @@ app.controller('ProfileController', function($scope, $stateParams, TwitterApi) {
     console.log($scope.tweets);
   })
   .error(function(err) {
-    console.log('Error: ', err.message);
+    console.log('Error: ', err);
   });
 });
+
+app.controller('LoginController', function($scope, $stateParams, $state, TwitterApi) {
+  $scope.userLogin = function(userId){
+    TwitterApi.getProfile(userId).success(function(result) {
+      console.log(result);
+      if (result !== null) {
+        $state.go('profile', {userID: userId});
+      }
+      else {
+        $state.go('signup');
+      }
+    });
+  };
+});
+
+app.controller('SignupController', function($scope, $stateParams, $state, TwitterApi) {
+  $scope.userSignup = function(userId, website, avatar_url) {
+    // var userData ={
+    //   _id : userId,
+    //   website: website,
+    //   avatar_url: avatar_url
+    // };
+    TwitterApi.userSignup(userId, website, avatar_url).success(function(result) {
+      console.log(result);
+    });
+  };
+
+});
+
 
 app.config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
@@ -46,6 +91,18 @@ app.config(function($stateProvider, $urlRouterProvider) {
       url: '/profileInfo/{userID}',
       templateUrl: 'profile.html',
       controller: 'ProfileController'
+    })
+    .state({
+      name: 'login',
+      url: '/login',
+      templateUrl: 'login.html',
+      controller: 'LoginController'
+    })
+    .state({
+      name: 'signup',
+      url: '/signup',
+      templateUrl: 'signup.html',
+      controller: 'SignupController'
     })
     .state({
       name: 'home',
