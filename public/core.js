@@ -63,6 +63,17 @@ app.factory("TwitterApi", function factoryFunction($http, $rootScope, $cookies, 
     });
   };
 
+  service.follow = function(followID, userID) {
+    return $http({
+      url: '/follow',
+      method: 'POST',
+      data: {
+        follower: userID,
+        following: followID
+      }
+    });
+  };
+
   return service;
 });
 
@@ -93,7 +104,7 @@ app.controller('HomeController', function($scope, $cookies, $state, $rootScope, 
 
 });
 
-app.controller('ProfileController', function($scope, $stateParams, TwitterApi) {
+app.controller('ProfileController', function($scope, $stateParams, $state, $cookies, TwitterApi) {
   console.log($stateParams.userID);
   TwitterApi.getProfile($stateParams.userID).success(function(result) {
     $scope.tweets = result;
@@ -102,6 +113,13 @@ app.controller('ProfileController', function($scope, $stateParams, TwitterApi) {
   .error(function(err) {
     console.log('Error: ', err);
   });
+
+  $scope.followUser = function(followID) {
+    TwitterApi.follow(followID, $cookies.get('userId')).success(function(result) {
+      console.log(result);
+    });
+    $state.go('profile', {userID: $stateParams.userID}, {reload: true});
+  };
 });
 
 app.controller('LoginController', function($scope, $stateParams, $state, $cookies, TwitterApi, $rootScope) {

@@ -21,12 +21,14 @@
       <div class="col-xs-12">
         <a ui-sref="login()" ng-if="loginState === false"><button>Login</button></a>
         <button ng-click="logout()" ng-if="loginState === true">Logout</button>
+        <a ui-sref="signup()" ng-if="loginState === false"><button>Signup</button></a>
       </div>
       <div class="col-xs-12">
-        <a ui-sref="signup()" ng-if="loginState === false"><button>Signup</button></a>
+
         <input id="look" type="text" ng-model="searchUser" value="">
         <a ui-sref="profile({userID: searchUser})"><button type="button" name="button">Search</button></a>
       </div>
+    
     </div>
     <ui-view></ui-view>
   </body>

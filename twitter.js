@@ -103,6 +103,17 @@ app.post('/tweet/:userID/:text', function(req, res) {
   });
 });
 
+app.post('/follow', function(req, res) {
+  console.log(req.body.follower);
+  Follow.create({
+    follower: req.body.follower,
+    following: req.body.following
+  })
+  .then(function(res) {
+    console.log(res);
+  });
+});
+
 const User = mongoose.model("User", {
   _id: String, // actually the username
   password: String,

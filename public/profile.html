@@ -1,2 +1,2 @@
-<h3 id="userid">{{tweets[0].userID}}</h3><button ng-if="loginState === true">Follow</button>
+<h3 id="userid">{{tweets[0].userID}}</h3><button ng-click="followUser(tweets[0].userID)" ng-if="loginState === true">Follow</button>
 <p ng-repeat="tweet in tweets">{{tweet.text}}</p>
